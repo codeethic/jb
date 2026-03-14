@@ -1,4 +1,12 @@
+'use client';
+
+import { useAuth } from '@/lib/auth-context';
+import { UserRole } from '@featureboard/shared';
+
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === UserRole.ADMIN;
+
   return (
     <main className="p-8">
       <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
@@ -23,6 +31,20 @@ export default function DashboardPage() {
           description="View today's published features"
           href="/today"
         />
+        {isAdmin && (
+          <>
+            <DashboardCard
+              title="Manage Users"
+              description="Add, edit, or deactivate users"
+              href="/admin/users"
+            />
+            <DashboardCard
+              title="Manage Categories"
+              description="Configure feature categories"
+              href="/admin/categories"
+            />
+          </>
+        )}
       </div>
     </main>
   );
