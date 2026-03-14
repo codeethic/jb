@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', minRole: UserRole.SERVER },
   { href: '/features', label: 'Features', minRole: UserRole.SERVER },
   { href: '/schedule', label: 'Schedule', minRole: UserRole.CHEF },
+  { href: '/pairings', label: 'Pairings', minRole: UserRole.SERVER },
   { href: '/today', label: "Today's Lineup", minRole: UserRole.SERVER },
 ];
 

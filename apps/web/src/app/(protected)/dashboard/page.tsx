@@ -14,6 +14,11 @@ export default function DashboardPage() {
           href="/schedule"
         />
         <DashboardCard
+          title="Wine Pairings"
+          description="Manage food and wine pairings"
+          href="/pairings"
+        />
+        <DashboardCard
           title="Today's Lineup"
           description="View today's published features"
           href="/today"
