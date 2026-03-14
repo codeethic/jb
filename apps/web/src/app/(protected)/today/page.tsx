@@ -38,7 +38,15 @@ export default function TodayPage() {
 
   return (
     <main className="max-w-lg mx-auto p-4 space-y-6">
-      <h1 className="text-2xl font-bold text-center">Today&apos;s Features</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Today&apos;s Features</h1>
+        <a
+          href="/today/print"
+          className="text-sm px-3 py-1.5 rounded-md border hover:bg-muted transition-colors"
+        >
+          Print Lineup
+        </a>
+      </div>
 
       {lineup.map((item) => (
         <div key={item.id} className="rounded-lg border p-4 space-y-2">
