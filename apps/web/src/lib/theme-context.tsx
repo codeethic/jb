@@ -2,12 +2,13 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
-export type Theme = 'classic' | 'bistro' | 'ocean';
+export type Theme = 'classic' | 'bistro' | 'ocean' | 'vineyard';
 
 const THEMES: { value: Theme; label: string }[] = [
   { value: 'classic', label: 'Classic' },
   { value: 'bistro', label: 'Bistro' },
   { value: 'ocean', label: 'Ocean' },
+  { value: 'vineyard', label: 'Vineyard' },
 ];
 
 const STORAGE_KEY = 'featureboard-theme';
@@ -25,7 +26,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'classic' || stored === 'bistro' || stored === 'ocean') {
+    if (stored === 'classic' || stored === 'bistro' || stored === 'ocean' || stored === 'vineyard') {
       setThemeState(stored);
       document.documentElement.setAttribute('data-theme', stored);
     }

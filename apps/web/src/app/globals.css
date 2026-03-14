@@ -28,27 +28,27 @@
     --radius: 0.5rem;
   }
 
-  /* Bistro — dark, moody restaurant theme */
+  /* Bistro — dark, warm restaurant theme matching FeatureBoard amber branding */
   [data-theme='bistro'] {
-    --background: 220 20% 10%;
-    --foreground: 40 20% 92%;
-    --card: 220 18% 14%;
-    --card-foreground: 40 20% 92%;
-    --popover: 220 18% 14%;
-    --popover-foreground: 40 20% 92%;
-    --primary: 38 80% 55%;
-    --primary-foreground: 220 20% 10%;
-    --secondary: 220 15% 18%;
-    --secondary-foreground: 40 15% 80%;
-    --muted: 220 12% 18%;
-    --muted-foreground: 220 8% 55%;
-    --accent: 220 15% 20%;
-    --accent-foreground: 40 20% 92%;
-    --destructive: 0 62% 50%;
+    --background: 25 18% 11%;
+    --foreground: 38 25% 90%;
+    --card: 25 16% 15%;
+    --card-foreground: 38 25% 90%;
+    --popover: 25 16% 15%;
+    --popover-foreground: 38 25% 90%;
+    --primary: 36 90% 56%;
+    --primary-foreground: 25 30% 10%;
+    --secondary: 25 14% 20%;
+    --secondary-foreground: 35 20% 80%;
+    --muted: 25 12% 20%;
+    --muted-foreground: 30 15% 62%;
+    --accent: 30 18% 22%;
+    --accent-foreground: 38 25% 90%;
+    --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 12% 22%;
-    --input: 220 12% 22%;
-    --ring: 38 80% 55%;
+    --border: 25 14% 30%;
+    --input: 25 14% 30%;
+    --ring: 36 90% 56%;
     --radius: 0.5rem;
   }
 
@@ -73,6 +73,30 @@
     --border: 200 15% 82%;
     --input: 200 15% 82%;
     --ring: 195 70% 40%;
+    --radius: 0.5rem;
+  }
+
+  /* Vineyard — rich burgundy and cream, upscale restaurant */
+  [data-theme='vineyard'] {
+    --background: 30 30% 96%;
+    --foreground: 350 20% 12%;
+    --card: 30 40% 99%;
+    --card-foreground: 350 20% 12%;
+    --popover: 30 40% 99%;
+    --popover-foreground: 350 20% 12%;
+    --primary: 345 60% 35%;
+    --primary-foreground: 30 40% 97%;
+    --secondary: 30 25% 91%;
+    --secondary-foreground: 350 18% 18%;
+    --muted: 30 18% 92%;
+    --muted-foreground: 350 10% 42%;
+    --accent: 30 30% 89%;
+    --accent-foreground: 350 20% 12%;
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 18% 82%;
+    --input: 30 18% 82%;
+    --ring: 345 60% 35%;
     --radius: 0.5rem;
   }
 }

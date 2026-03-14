@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, hasRole } from '@/lib/auth-context';
-import { useTheme } from '@/lib/theme-context';
+import { useTheme, type Theme } from '@/lib/theme-context';
 import { UserRole } from '@featureboard/shared';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -67,7 +67,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-4">
             <select
               value={theme}
-              onChange={(e) => setTheme(e.target.value as 'classic' | 'bistro' | 'ocean')}
+              onChange={(e) => setTheme(e.target.value as Theme)}
               className="text-xs rounded-md border bg-background px-2 py-1 outline-none"
             >
               {themes.map((t) => (
