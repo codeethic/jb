@@ -35,12 +35,19 @@
   "jest": {
     "testEnvironment": "jsdom",
     "transform": {
-      "^.+\\.(t|j)sx?$": "ts-jest"
+      "^.+\\.(t|j)sx?$": ["ts-jest", {
+        "tsconfig": {
+          "jsx": "react-jsx"
+        }
+      }]
     },
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1",
       "^@featureboard/shared(.*)$": "<rootDir>/../../packages/shared/src$1"
     },
-    "setupFilesAfterSetup": ["@testing-library/jest-dom"]
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.ts"],
+    "transformIgnorePatterns": [
+      "node_modules/(?!@featureboard/shared)"
+    ]
   }
 }
