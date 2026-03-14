@@ -20,7 +20,9 @@ interface LastUsedEntry {
 type ViewMode = 'list' | 'create' | 'edit';
 
 function formatLastUsed(dateStr: string): string {
-  const last = new Date(dateStr + 'T00:00:00');
+  const raw = typeof dateStr === 'string' ? dateStr.slice(0, 10) : String(dateStr).slice(0, 10);
+  const last = new Date(raw + 'T00:00:00');
+  if (isNaN(last.getTime())) return 'Unknown';
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const diffMs = today.getTime() - last.getTime();
