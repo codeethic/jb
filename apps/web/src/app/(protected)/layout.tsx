@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { href: '/features', label: 'Features', minRole: UserRole.SERVER },
   { href: '/schedule', label: 'Schedule', minRole: UserRole.CHEF },
   { href: '/pairings', label: 'Pairings', minRole: UserRole.SERVER },
-  { href: '/today', label: "Today's Lineup", minRole: UserRole.SERVER },
+  { href: '/today', label: "Today's Features", minRole: UserRole.SERVER },
   { href: '/admin/users', label: 'Users', minRole: UserRole.ADMIN },
   { href: '/admin/categories', label: 'Categories', minRole: UserRole.ADMIN },
 ];

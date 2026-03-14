@@ -8,6 +8,12 @@ interface LineupItem extends ScheduledFeature {
   featureItem: FeatureItem & { category: FeatureCategory };
 }
 
+function getLegalDrinkingAgeDate(): string {
+  const today = new Date();
+  const cutoff = new Date(today.getFullYear() - 21, today.getMonth(), today.getDate());
+  return cutoff.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
 export default function TodayPage() {
   const [lineup, setLineup] = useState<LineupItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,6 +52,11 @@ export default function TodayPage() {
         >
           Print Lineup
         </a>
+      </div>
+
+      <div className="rounded-lg border border-dashed p-3 text-center">
+        <p className="text-xs text-muted-foreground">Legal drinking age: born on or before</p>
+        <p className="text-sm font-semibold">{getLegalDrinkingAgeDate()}</p>
       </div>
 
       {lineup.map((item) => (

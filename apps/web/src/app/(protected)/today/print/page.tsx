@@ -18,6 +18,12 @@ interface PairingWithItems extends Pairing {
   wineItem: FeatureItem;
 }
 
+function getLegalDrinkingAgeDate(): string {
+  const today = new Date();
+  const cutoff = new Date(today.getFullYear() - 21, today.getMonth(), today.getDate());
+  return cutoff.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
 export default function PrintLineupPage() {
   const [lineup, setLineup] = useState<LineupItem[]>([]);
   const [pairings, setPairings] = useState<PairingWithItems[]>([]);
@@ -93,6 +99,9 @@ export default function PrintLineupPage() {
         <header className="text-center border-b pb-4">
           <h1 className="text-3xl font-bold tracking-tight">Tonight&apos;s Features</h1>
           <p className="text-sm text-muted-foreground mt-1">{today}</p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Legal drinking age: born on or before <span className="font-semibold">{getLegalDrinkingAgeDate()}</span>
+          </p>
         </header>
 
         {lineup.length === 0 ? (

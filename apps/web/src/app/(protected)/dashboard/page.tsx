@@ -27,7 +27,7 @@ export default function DashboardPage() {
           href="/pairings"
         />
         <DashboardCard
-          title="Today's Lineup"
+          title="Today's Features"
           description="View today's published features"
           href="/today"
         />

@@ -24,7 +24,7 @@ describe('DashboardPage', () => {
     expect(screen.getByText('Feature Library')).toBeInTheDocument();
     expect(screen.getByText('Weekly Schedule')).toBeInTheDocument();
     expect(screen.getByText('Wine Pairings')).toBeInTheDocument();
-    expect(screen.getByText("Today's Lineup")).toBeInTheDocument();
+    expect(screen.getByText("Today's Features")).toBeInTheDocument();
   });
 
   it('should not show admin cards for non-admin users', () => {
