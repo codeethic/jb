@@ -12,12 +12,30 @@ interface FeatureItemWithCategory extends FeatureItem {
   marginPercent?: number;
 }
 
+interface LastUsedEntry {
+  featureItemId: string;
+  lastServiceDate: string;
+}
+
 type ViewMode = 'list' | 'create' | 'edit';
+
+function formatLastUsed(dateStr: string): string {
+  const last = new Date(dateStr + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffMs = today.getTime() - last.getTime();
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays < 0) return `in ${-diffDays}d`;
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return '1 day ago';
+  return `${diffDays} days ago`;
+}
 
 export default function FeaturesPage() {
   const { user } = useAuth();
   const [features, setFeatures] = useState<FeatureItemWithCategory[]>([]);
   const [categories, setCategories] = useState<FeatureCategory[]>([]);
+  const [lastUsedMap, setLastUsedMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<ViewMode>('list');
   const [editingFeature, setEditingFeature] = useState<FeatureItemWithCategory | null>(null);
@@ -29,9 +47,19 @@ export default function FeaturesPage() {
 
   const fetchFeatures = useCallback(() => {
     setLoading(true);
-    apiFetch<FeatureItemWithCategory[]>('/features')
-      .then((res) => {
-        if (res.data) setFeatures(res.data);
+    Promise.all([
+      apiFetch<FeatureItemWithCategory[]>('/features'),
+      apiFetch<LastUsedEntry[]>('/schedule/last-used'),
+    ])
+      .then(([featRes, luRes]) => {
+        if (featRes.data) setFeatures(featRes.data);
+        if (luRes.data) {
+          const map: Record<string, string> = {};
+          for (const entry of luRes.data) {
+            map[entry.featureItemId] = entry.lastServiceDate;
+          }
+          setLastUsedMap(map);
+        }
       })
       .finally(() => setLoading(false));
   }, []);
@@ -152,6 +180,7 @@ export default function FeaturesPage() {
                 <th className="py-2 pr-4 font-medium text-right">Price</th>
                 <th className="py-2 pr-4 font-medium text-right">Margin</th>
                 <th className="py-2 pr-4 font-medium">Status</th>
+                <th className="py-2 pr-4 font-medium">Last Used</th>
                 {canCreate && <th className="py-2 font-medium text-right">Actions</th>}
               </tr>
             </thead>
@@ -178,6 +207,11 @@ export default function FeaturesPage() {
                       >
                         {f.active ? 'Active' : 'Inactive'}
                       </span>
+                    </td>
+                    <td className="py-2 pr-4 text-muted-foreground text-xs">
+                      {lastUsedMap[f.id]
+                        ? formatLastUsed(lastUsedMap[f.id])
+                        : 'Never'}
                     </td>
                     {canCreate && (
                       <td className="py-2 text-right space-x-1">

@@ -61,4 +61,17 @@ export class TypeOrmScheduledFeatureRepository implements IScheduledFeatureRepos
   async delete(id: string): Promise<void> {
     await this.repo.delete(id);
   }
+
+  async getLastUsedDates(
+    restaurantId: string,
+  ): Promise<{ featureItemId: string; lastServiceDate: string }[]> {
+    const rows = await this.repo
+      .createQueryBuilder('sf')
+      .select('sf.featureItemId', 'featureItemId')
+      .addSelect('MAX(sf.serviceDate)', 'lastServiceDate')
+      .where('sf.restaurantId = :restaurantId', { restaurantId })
+      .groupBy('sf.featureItemId')
+      .getRawMany();
+    return rows;
+  }
 }

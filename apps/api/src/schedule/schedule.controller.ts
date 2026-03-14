@@ -11,6 +11,12 @@ import { ScheduleService } from './schedule.service';
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
+  @Get('last-used')
+  @Roles(UserRole.SERVER, UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  async getLastUsedDates(@CurrentUser() user: { restaurantId: string }) {
+    return this.scheduleService.getLastUsedDates(user.restaurantId);
+  }
+
   @Get()
   @Roles(UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
   async findByWeek(

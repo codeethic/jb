@@ -20,6 +20,9 @@ export interface IScheduledFeatureRepository {
     data: Partial<ScheduledFeatureEntity>,
   ): Promise<ScheduledFeatureEntity | null>;
   delete(id: string): Promise<void>;
+  getLastUsedDates(
+    restaurantId: string,
+  ): Promise<{ featureItemId: string; lastServiceDate: string }[]>;
 }
 
 export const SCHEDULED_FEATURE_REPOSITORY = Symbol('SCHEDULED_FEATURE_REPOSITORY');

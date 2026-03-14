@@ -44,6 +44,10 @@ export class ScheduleService {
     await this.scheduledFeatureRepository.delete(id);
   }
 
+  async getLastUsedDates(restaurantId: string) {
+    return this.scheduledFeatureRepository.getLastUsedDates(restaurantId);
+  }
+
   /** Get today's published lineup for the daily lineup page */
   async getTodayLineup(restaurantId: string) {
     const today = new Date().toISOString().split('T')[0];
