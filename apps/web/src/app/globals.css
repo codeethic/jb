@@ -1,3 +1,78 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Default — warm neutral light theme */
+  :root,
+  [data-theme='classic'] {
+    --background: 0 0% 100%;
+    --foreground: 20 14% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 10%;
+    --primary: 24 70% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 20% 94%;
+    --secondary-foreground: 20 14% 20%;
+    --muted: 30 10% 94%;
+    --muted-foreground: 20 6% 45%;
+    --accent: 30 20% 92%;
+    --accent-foreground: 20 14% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 10% 85%;
+    --input: 30 10% 85%;
+    --ring: 24 70% 45%;
+    --radius: 0.5rem;
+  }
+
+  /* Bistro — dark, moody restaurant theme */
+  [data-theme='bistro'] {
+    --background: 220 20% 10%;
+    --foreground: 40 20% 92%;
+    --card: 220 18% 14%;
+    --card-foreground: 40 20% 92%;
+    --popover: 220 18% 14%;
+    --popover-foreground: 40 20% 92%;
+    --primary: 38 80% 55%;
+    --primary-foreground: 220 20% 10%;
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 40 15% 80%;
+    --muted: 220 12% 18%;
+    --muted-foreground: 220 8% 55%;
+    --accent: 220 15% 20%;
+    --accent-foreground: 40 20% 92%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 12% 22%;
+    --input: 220 12% 22%;
+    --ring: 38 80% 55%;
+    --radius: 0.5rem;
+  }
+
+  /* Ocean — cool blue-green theme */
+  [data-theme='ocean'] {
+    --background: 200 25% 97%;
+    --foreground: 200 30% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 200 30% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 30% 10%;
+    --primary: 195 70% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 195 20% 92%;
+    --secondary-foreground: 200 30% 15%;
+    --muted: 200 15% 92%;
+    --muted-foreground: 200 10% 45%;
+    --accent: 195 20% 90%;
+    --accent-foreground: 200 30% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 200 15% 82%;
+    --input: 200 15% 82%;
+    --ring: 195 70% 40%;
+    --radius: 0.5rem;
+  }
+}

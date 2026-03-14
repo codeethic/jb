@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, hasRole } from '@/lib/auth-context';
+import { useTheme } from '@/lib/theme-context';
 import { UserRole } from '@featureboard/shared';
 import Link from 'next/link';
 
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
+  const { theme, setTheme, themes } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
@@ -61,6 +63,17 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
             </nav>
           </div>
           <div className="flex items-center gap-4">
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value as 'classic' | 'bistro' | 'ocean')}
+              className="text-xs rounded-md border bg-background px-2 py-1 outline-none"
+            >
+              {themes.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
             <span className="text-xs text-muted-foreground">
               {user.name}{' '}
               <span className="uppercase font-medium">({user.role})</span>
