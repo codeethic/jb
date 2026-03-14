@@ -1,13 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import type { LoginDto } from '@featureboard/shared';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import type { LoginDto, AuthResponse } from '@featureboard/shared';
+import { useAuth } from '@/lib/auth-context';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { user, login } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) router.replace('/dashboard');
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,23 +23,24 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password } satisfies LoginDto),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/login`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password } satisfies LoginDto),
+        },
+      );
 
-      const body = await res.json() as { data: { accessToken: string; user: unknown }; error: string | null };
+      const body = await res.json() as { data: AuthResponse; error: string | null };
 
       if (!res.ok) {
         setError(body.error || 'Login failed');
         return;
       }
 
-      // Store token and redirect
-      localStorage.setItem('token', body.data.accessToken);
-      localStorage.setItem('user', JSON.stringify(body.data.user));
-      window.location.href = '/dashboard';
+      login(body.data.accessToken, body.data.user);
+      router.push('/dashboard');
     } catch {
       setError('Network error. Please try again.');
     } finally {
