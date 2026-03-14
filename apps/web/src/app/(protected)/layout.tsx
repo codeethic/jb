@@ -6,6 +6,8 @@ import { useAuth, hasRole } from '@/lib/auth-context';
 import { useTheme } from '@/lib/theme-context';
 import { UserRole } from '@featureboard/shared';
 import Link from 'next/link';
+import Image from 'next/image';
+import banner from '../banner.svg';
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', minRole: UserRole.SERVER },
@@ -47,8 +49,8 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
       <header className="border-b bg-background">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 h-14">
           <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="font-bold text-lg">
-              FeatureBoard
+            <Link href="/dashboard" className="flex items-center">
+              <Image src={banner} alt="FeatureBoard" width={180} height={40} priority />
             </Link>
             <nav className="hidden md:flex items-center gap-1">
               {visibleNav.map((item) => (
