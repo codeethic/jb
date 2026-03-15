@@ -69,7 +69,7 @@ export default function Home() {
           {FEATURES.map((f) => (
             <div
               key={f.title}
-              className="rounded-lg border bg-card p-6 shadow-sm hover:shadow-md transition-shadow"
+              className="rounded-lg border bg-card p-6 shadow-sm hover:shadow-md transition-shadow select-none"
             >
               <div className="text-3xl mb-3">{f.icon}</div>
               <h3 className="font-semibold text-lg mb-2">{f.title}</h3>

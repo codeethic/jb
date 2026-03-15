@@ -62,7 +62,7 @@ function DashboardCard({
   return (
     <a
       href={href}
-      className="block rounded-lg border bg-card p-6 shadow-sm hover:shadow-md transition-shadow"
+      className="block rounded-lg border bg-card p-6 shadow-sm hover:shadow-md transition-shadow select-none cursor-pointer"
     >
       <h2 className="text-lg font-semibold">{title}</h2>
       <p className="text-sm text-muted-foreground mt-1">{description}</p>

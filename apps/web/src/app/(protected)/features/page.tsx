@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { apiFetch } from '@/lib/api';
 import { useAuth, hasRole } from '@/lib/auth-context';
 import type { FeatureItem, FeatureCategory, CreateFeatureItemDto } from '@featureboard/shared';
@@ -43,6 +43,9 @@ export default function FeaturesPage() {
   const [editingFeature, setEditingFeature] = useState<FeatureItemWithCategory | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<FeatureItemWithCategory | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const canCreate = user ? hasRole(user.role, UserRole.CHEF) : false;
   const canDelete = user ? hasRole(user.role, UserRole.MANAGER) : false;
@@ -155,6 +158,17 @@ export default function FeaturesPage() {
     );
   }
 
+  const searchLower = search.toLowerCase();
+  const filtered = features.filter((f) => {
+    if (search && !f.name.toLowerCase().includes(searchLower) && !f.description?.toLowerCase().includes(searchLower)) {
+      return false;
+    }
+    if (categoryFilter && f.categoryId !== categoryFilter) return false;
+    if (statusFilter === 'active' && !f.active) return false;
+    if (statusFilter === 'inactive' && f.active) return false;
+    return true;
+  });
+
   return (
     <div className="max-w-5xl mx-auto p-8">
       <div className="flex items-center justify-between mb-6">
@@ -169,8 +183,51 @@ export default function FeaturesPage() {
         )}
       </div>
 
-      {features.length === 0 ? (
-        <p className="text-muted-foreground">No feature items yet.</p>
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by name or description…"
+          className="flex-1 min-w-[200px] rounded-md border bg-background px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+        />
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="rounded-md border bg-background px-3 py-1.5 text-sm outline-none"
+        >
+          <option value="">All Categories</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
+          className="rounded-md border bg-background px-3 py-1.5 text-sm outline-none"
+        >
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        {(search || categoryFilter || statusFilter !== 'all') && (
+          <button
+            onClick={() => { setSearch(''); setCategoryFilter(''); setStatusFilter('all'); }}
+            className="text-xs text-muted-foreground hover:text-foreground underline"
+          >
+            Clear filters
+          </button>
+        )}
+        <span className="text-xs text-muted-foreground ml-auto">
+          {filtered.length} of {features.length} items
+        </span>
+      </div>
+
+      {filtered.length === 0 ? (
+        <p className="text-muted-foreground">
+          {features.length === 0 ? 'No feature items yet.' : 'No items match the current filters.'}
+        </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
@@ -187,7 +244,7 @@ export default function FeaturesPage() {
               </tr>
             </thead>
             <tbody>
-              {features.map((f) => {
+              {filtered.map((f) => {
                 const margin =
                   f.marginPercent ?? calculateMargin(Number(f.price), Number(f.cost));
                 return (
