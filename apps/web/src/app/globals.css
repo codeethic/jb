@@ -99,4 +99,76 @@
     --ring: 345 60% 35%;
     --radius: 0.5rem;
   }
+
+  /* Wolfpack — NC State red and white, bold and fierce */
+  [data-theme='wolfpack'] {
+    --background: 0 10% 97%;
+    --foreground: 0 20% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 20% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 20% 10%;
+    --primary: 0 100% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 12% 92%;
+    --secondary-foreground: 0 18% 18%;
+    --muted: 0 8% 93%;
+    --muted-foreground: 0 6% 45%;
+    --accent: 0 14% 90%;
+    --accent-foreground: 0 20% 10%;
+    --destructive: 30 80% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 10% 84%;
+    --input: 0 10% 84%;
+    --ring: 0 100% 40%;
+    --radius: 0.5rem;
+  }
+
+  /* Tarheels — UNC Carolina Blue and white, clean and classic */
+  [data-theme='tarheels'] {
+    --background: 205 30% 97%;
+    --foreground: 210 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 25% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 25% 10%;
+    --primary: 205 47% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 205 20% 92%;
+    --secondary-foreground: 210 22% 18%;
+    --muted: 205 14% 93%;
+    --muted-foreground: 210 10% 45%;
+    --accent: 205 22% 90%;
+    --accent-foreground: 210 25% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 205 14% 83%;
+    --input: 205 14% 83%;
+    --ring: 205 47% 58%;
+    --radius: 0.5rem;
+  }
+
+  /* Blue Devils — Duke blue and white, regal and sharp */
+  [data-theme='blue-devils'] {
+    --background: 220 20% 96%;
+    --foreground: 220 30% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 10%;
+    --primary: 219 100% 26%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 16% 91%;
+    --secondary-foreground: 220 25% 18%;
+    --muted: 220 12% 92%;
+    --muted-foreground: 220 8% 45%;
+    --accent: 220 18% 89%;
+    --accent-foreground: 220 30% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 14% 82%;
+    --input: 220 14% 82%;
+    --ring: 219 100% 26%;
+    --radius: 0.5rem;
+  }
 }
