@@ -30,25 +30,25 @@
 
   /* Bistro — dark, warm restaurant theme matching FeatureBoard amber branding */
   [data-theme='bistro'] {
-    --background: 25 18% 11%;
-    --foreground: 38 25% 90%;
-    --card: 25 16% 15%;
-    --card-foreground: 38 25% 90%;
-    --popover: 25 16% 15%;
-    --popover-foreground: 38 25% 90%;
-    --primary: 36 90% 56%;
+    --background: 30 20% 12%;
+    --foreground: 40 30% 92%;
+    --card: 30 18% 16%;
+    --card-foreground: 40 30% 92%;
+    --popover: 30 18% 16%;
+    --popover-foreground: 40 30% 92%;
+    --primary: 40 96% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 25 14% 20%;
-    --secondary-foreground: 35 20% 80%;
-    --muted: 25 12% 20%;
-    --muted-foreground: 30 15% 62%;
-    --accent: 30 18% 22%;
-    --accent-foreground: 38 25% 90%;
+    --secondary: 30 14% 22%;
+    --secondary-foreground: 40 25% 82%;
+    --muted: 30 12% 22%;
+    --muted-foreground: 35 15% 65%;
+    --accent: 35 18% 24%;
+    --accent-foreground: 40 30% 92%;
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 25 14% 30%;
-    --input: 25 14% 30%;
-    --ring: 36 90% 56%;
+    --border: 30 14% 32%;
+    --input: 30 14% 32%;
+    --ring: 40 96% 53%;
     --radius: 0.5rem;
   }
 

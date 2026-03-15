@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { LoginDto, AuthResponse } from '@featureboard/shared';
 import { useAuth } from '@/lib/auth-context';
+import Image from 'next/image';
+import banner from '../banner.svg';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -51,9 +53,9 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Sign in to FeatureBoard</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+        <div className="text-center flex flex-col items-center">
+          <Image src={banner} alt="FeatureBoard" width={280} height={62} priority className="mb-4" />
+          <p className="text-sm text-muted-foreground">
             Enter your credentials to access the system
           </p>
         </div>
