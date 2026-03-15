@@ -12,7 +12,7 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
-  @Roles(UserRole.SERVER, UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.SERVER)
   async findAll(@CurrentUser() user: { restaurantId: string }) {
     return this.categoriesService.findAll(user.restaurantId);
   }

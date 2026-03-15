@@ -12,19 +12,19 @@ export class PairingsController {
   constructor(private readonly pairingsService: PairingsService) {}
 
   @Get()
-  @Roles(UserRole.SERVER, UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.SERVER)
   async findAll(@CurrentUser() user: { restaurantId: string }) {
     return this.pairingsService.findAll(user.restaurantId);
   }
 
   @Get(':id')
-  @Roles(UserRole.SERVER, UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.SERVER)
   async findOne(@Param('id') id: string) {
     return this.pairingsService.findById(id);
   }
 
   @Post()
-  @Roles(UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.CHEF)
   async create(
     @Body() dto: CreatePairingDto,
     @CurrentUser() user: { restaurantId: string },
@@ -33,13 +33,13 @@ export class PairingsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.CHEF)
   async update(@Param('id') id: string, @Body() dto: UpdatePairingDto) {
     return this.pairingsService.update(id, dto);
   }
 
   @Delete(':id')
-  @Roles(UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.MANAGER)
   async remove(@Param('id') id: string) {
     await this.pairingsService.delete(id);
   }

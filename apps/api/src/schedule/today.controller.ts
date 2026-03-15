@@ -15,7 +15,7 @@ export class TodayController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Get()
-  @Roles(UserRole.SERVER, UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.SERVER)
   async getTodayLineup(@CurrentUser() user: { restaurantId: string }) {
     return this.scheduleService.getTodayLineup(user.restaurantId);
   }

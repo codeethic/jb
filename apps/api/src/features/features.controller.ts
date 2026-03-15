@@ -12,19 +12,19 @@ export class FeaturesController {
   constructor(private readonly featuresService: FeaturesService) {}
 
   @Get()
-  @Roles(UserRole.SERVER, UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.SERVER)
   async findAll(@CurrentUser() user: { restaurantId: string }) {
     return this.featuresService.findAll(user.restaurantId);
   }
 
   @Get(':id')
-  @Roles(UserRole.SERVER, UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.SERVER)
   async findOne(@Param('id') id: string) {
     return this.featuresService.findById(id);
   }
 
   @Post()
-  @Roles(UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.CHEF)
   async create(
     @Body() dto: CreateFeatureItemDto,
     @CurrentUser() user: { restaurantId: string },
@@ -33,13 +33,13 @@ export class FeaturesController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.CHEF)
   async update(@Param('id') id: string, @Body() dto: UpdateFeatureItemDto) {
     return this.featuresService.update(id, dto);
   }
 
   @Delete(':id')
-  @Roles(UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.MANAGER)
   async remove(@Param('id') id: string) {
     await this.featuresService.delete(id);
   }

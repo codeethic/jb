@@ -12,13 +12,13 @@ export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Get('last-used')
-  @Roles(UserRole.SERVER, UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.SERVER)
   async getLastUsedDates(@CurrentUser() user: { restaurantId: string }) {
     return this.scheduleService.getLastUsedDates(user.restaurantId);
   }
 
   @Get()
-  @Roles(UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.CHEF)
   async findByWeek(
     @CurrentUser() user: { restaurantId: string },
     @Query('startDate') startDate: string,
@@ -28,13 +28,13 @@ export class ScheduleController {
   }
 
   @Get(':id')
-  @Roles(UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.CHEF)
   async findOne(@Param('id') id: string) {
     return this.scheduleService.findById(id);
   }
 
   @Post()
-  @Roles(UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.CHEF)
   async create(
     @Body() dto: CreateScheduledFeatureDto,
     @CurrentUser() user: { restaurantId: string },
@@ -43,13 +43,13 @@ export class ScheduleController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.CHEF)
   async update(@Param('id') id: string, @Body() dto: UpdateScheduledFeatureDto) {
     return this.scheduleService.update(id, dto);
   }
 
   @Delete(':id')
-  @Roles(UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.MANAGER)
   async remove(@Param('id') id: string) {
     await this.scheduleService.delete(id);
   }
