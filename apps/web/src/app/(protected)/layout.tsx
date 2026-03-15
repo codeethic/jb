@@ -11,7 +11,7 @@ import banner from '../banner.svg';
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', minRole: UserRole.SERVER },
-  { href: '/features', label: 'Features', minRole: UserRole.SERVER },
+  { href: '/features', label: 'Features', minRole: UserRole.CHEF },
   { href: '/schedule', label: 'Schedule', minRole: UserRole.CHEF },
   { href: '/pairings', label: 'Pairings', minRole: UserRole.SERVER },
   { href: '/today', label: "Today's Features", minRole: UserRole.SERVER },
