@@ -286,7 +286,10 @@ export default function FeaturesPage() {
                     onClick={() => toggleSort(key)}
                     className={`py-2 pr-4 font-medium cursor-pointer select-none hover:text-foreground ${right ? 'text-right' : ''}`}
                   >
-                    {label} {sortCol === key ? (sortDir === 'asc' ? '▲' : '▼') : ''}
+                    {label}{' '}
+                    <span className="inline-block w-4 text-muted-foreground">
+                      {sortCol === key ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+                    </span>
                   </th>
                 ))}
                 {canCreate && <th className="py-2 font-medium text-right">Actions</th>}
