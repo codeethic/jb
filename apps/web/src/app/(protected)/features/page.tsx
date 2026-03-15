@@ -46,6 +46,8 @@ export default function FeaturesPage() {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [sortCol, setSortCol] = useState<'name' | 'category' | 'cost' | 'price' | 'margin' | 'status' | 'lastUsed'>('name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const canCreate = user ? hasRole(user.role, UserRole.CHEF) : false;
   const canDelete = user ? hasRole(user.role, UserRole.MANAGER) : false;
@@ -169,6 +171,43 @@ export default function FeaturesPage() {
     return true;
   });
 
+  const toggleSort = (col: typeof sortCol) => {
+    if (sortCol === col) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortCol(col);
+      setSortDir('asc');
+    }
+  };
+
+  const sorted = [...filtered].sort((a, b) => {
+    const dir = sortDir === 'asc' ? 1 : -1;
+    switch (sortCol) {
+      case 'name':
+        return dir * a.name.localeCompare(b.name);
+      case 'category':
+        return dir * (a.category?.name ?? '').localeCompare(b.category?.name ?? '');
+      case 'cost':
+        return dir * (Number(a.cost) - Number(b.cost));
+      case 'price':
+        return dir * (Number(a.price) - Number(b.price));
+      case 'margin': {
+        const am = a.marginPercent ?? calculateMargin(Number(a.price), Number(a.cost));
+        const bm = b.marginPercent ?? calculateMargin(Number(b.price), Number(b.cost));
+        return dir * (am - bm);
+      }
+      case 'status':
+        return dir * (Number(a.active) - Number(b.active));
+      case 'lastUsed': {
+        const da = lastUsedMap[a.id] ?? '';
+        const db = lastUsedMap[b.id] ?? '';
+        return dir * da.localeCompare(db);
+      }
+      default:
+        return 0;
+    }
+  });
+
   return (
     <div className="max-w-5xl mx-auto p-8">
       <div className="flex items-center justify-between mb-6">
@@ -233,18 +272,28 @@ export default function FeaturesPage() {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b text-left">
-                <th className="py-2 pr-4 font-medium">Name</th>
-                <th className="py-2 pr-4 font-medium">Category</th>
-                <th className="py-2 pr-4 font-medium text-right">Cost</th>
-                <th className="py-2 pr-4 font-medium text-right">Price</th>
-                <th className="py-2 pr-4 font-medium text-right">Margin</th>
-                <th className="py-2 pr-4 font-medium">Status</th>
-                <th className="py-2 pr-4 font-medium">Last Used</th>
+                {[
+                  { key: 'name' as const, label: 'Name' },
+                  { key: 'category' as const, label: 'Category' },
+                  { key: 'cost' as const, label: 'Cost', right: true },
+                  { key: 'price' as const, label: 'Price', right: true },
+                  { key: 'margin' as const, label: 'Margin', right: true },
+                  { key: 'status' as const, label: 'Status' },
+                  { key: 'lastUsed' as const, label: 'Last Used' },
+                ].map(({ key, label, right }) => (
+                  <th
+                    key={key}
+                    onClick={() => toggleSort(key)}
+                    className={`py-2 pr-4 font-medium cursor-pointer select-none hover:text-foreground ${right ? 'text-right' : ''}`}
+                  >
+                    {label} {sortCol === key ? (sortDir === 'asc' ? '▲' : '▼') : ''}
+                  </th>
+                ))}
                 {canCreate && <th className="py-2 font-medium text-right">Actions</th>}
               </tr>
             </thead>
             <tbody>
-              {filtered.map((f) => {
+              {sorted.map((f) => {
                 const margin =
                   f.marginPercent ?? calculateMargin(Number(f.price), Number(f.cost));
                 return (
