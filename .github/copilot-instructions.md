@@ -128,3 +128,15 @@ Test coverage is a priority — every service, controller, and non-trivial compo
 - Tests live next to source files (`*.spec.ts` / `*.test.tsx`).
 - Run all tests from the workspace root: `pnpm --filter api test`, `pnpm --filter web test`.
 - CI must run `pnpm test` (all workspaces), `pnpm lint`, and `pnpm format:check` — PRs blocked on failure.
+
+## Help Page Maintenance
+
+There is a searchable help page at `/help` (accessible to all logged-in users). Its content lives in `apps/web/src/lib/help-content.ts`.
+
+**Whenever you add, change, or remove a user-facing feature**, update the help content file:
+- Add a new `HelpEntry` for new features (with descriptive `title`, appropriate `category`, relevant `keywords`, and clear `content`).
+- Update existing entries if behaviour changes.
+- Remove entries for deleted features.
+- If a new category of help is needed, add it to the `HELP_CATEGORIES` array.
+
+This ensures end-users can always find up-to-date documentation in the app.

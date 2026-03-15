@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { href: '/today', label: "Today's Features", minRole: UserRole.SERVER },
   { href: '/admin/users', label: 'Users', minRole: UserRole.MANAGER },
   { href: '/admin/categories', label: 'Categories', minRole: UserRole.ADMIN },
+  { href: '/help', label: 'Help', minRole: UserRole.SERVER },
 ];
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
