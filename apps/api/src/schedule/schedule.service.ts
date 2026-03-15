@@ -50,7 +50,8 @@ export class ScheduleService {
 
   /** Get today's published lineup for the daily lineup page */
   async getTodayLineup(restaurantId: string) {
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const scheduled = await this.scheduledFeatureRepository.findByDate(restaurantId, today);
     return scheduled.filter((s) => s.status === FeatureStatus.PUBLISHED);
   }

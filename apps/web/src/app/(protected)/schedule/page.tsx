@@ -20,6 +20,13 @@ interface ScheduleItem extends ScheduledFeature {
   featureItem: FeatureItem & { category: FeatureCategory };
 }
 
+function formatLocalDate(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function getWeekRange(offset: number) {
   const now = new Date();
   const day = now.getDay(); // 0=Sun
@@ -28,14 +35,13 @@ function getWeekRange(offset: number) {
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
 
-  const fmt = (d: Date) => d.toISOString().slice(0, 10);
-  return { startDate: fmt(monday), endDate: fmt(sunday), monday };
+  return { startDate: formatLocalDate(monday), endDate: formatLocalDate(sunday), monday };
 }
 
 function dateForDayIndex(monday: Date, i: number) {
   const d = new Date(monday);
   d.setDate(monday.getDate() + i);
-  return d.toISOString().slice(0, 10);
+  return formatLocalDate(d);
 }
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -181,7 +187,7 @@ export default function SchedulePage() {
         newD.setDate(oldD.getDate() + 7);
         const dto: CreateScheduledFeatureDto = {
           featureItemId: item.featureItemId,
-          serviceDate: newD.toISOString().slice(0, 10),
+          serviceDate: formatLocalDate(newD),
           mealPeriod: item.mealPeriod,
           status: FeatureStatus.DRAFT,
           notes: item.notes,
