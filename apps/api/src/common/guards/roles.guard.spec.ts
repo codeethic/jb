@@ -29,27 +29,49 @@ describe('RolesGuard', () => {
     expect(guard.canActivate(ctx)).toBe(true);
   });
 
-  it('should allow access when user role is in required roles', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CHEF, UserRole.ADMIN]);
+  it('should allow access when user role meets minimum role', () => {
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(UserRole.CHEF);
     const ctx = createMockContext(UserRole.CHEF);
     expect(guard.canActivate(ctx)).toBe(true);
   });
 
-  it('should deny access when user role is not in required roles', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.ADMIN]);
+  it('should allow access when user role exceeds minimum role', () => {
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(UserRole.SERVER);
+    const ctx = createMockContext(UserRole.ADMIN);
+    expect(guard.canActivate(ctx)).toBe(true);
+  });
+
+  it('should deny access when user role is below minimum role', () => {
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(UserRole.ADMIN);
     const ctx = createMockContext(UserRole.SERVER);
     expect(guard.canActivate(ctx)).toBe(false);
   });
 
   it('should allow admin access to admin-only routes', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.ADMIN]);
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(UserRole.ADMIN);
     const ctx = createMockContext(UserRole.ADMIN);
     expect(guard.canActivate(ctx)).toBe(true);
   });
 
-  it('should allow access when empty roles array', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([]);
+  it('should allow all roles when minimum role is SERVER', () => {
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(UserRole.SERVER);
+    for (const role of [UserRole.SERVER, UserRole.CHEF, UserRole.MANAGER, UserRole.ADMIN]) {
+      const ctx = createMockContext(role);
+      expect(guard.canActivate(ctx)).toBe(true);
+    }
+  });
+
+  it('should deny server access to chef-level routes', () => {
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(UserRole.CHEF);
     const ctx = createMockContext(UserRole.SERVER);
-    expect(guard.canActivate(ctx)).toBe(true);
+    expect(guard.canActivate(ctx)).toBe(false);
+  });
+
+  it('should deny server and chef access to manager-level routes', () => {
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(UserRole.MANAGER);
+    expect(guard.canActivate(createMockContext(UserRole.SERVER))).toBe(false);
+    expect(guard.canActivate(createMockContext(UserRole.CHEF))).toBe(false);
+    expect(guard.canActivate(createMockContext(UserRole.MANAGER))).toBe(true);
+    expect(guard.canActivate(createMockContext(UserRole.ADMIN))).toBe(true);
   });
 });
