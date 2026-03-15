@@ -71,6 +71,8 @@ export default function SchedulePage() {
   const [deleting, setDeleting] = useState(false);
   const [duplicating, setDuplicating] = useState(false);
   const [duplicatingDay, setDuplicatingDay] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'week' | 'stacked' | 'day'>('week');
+  const [selectedDay, setSelectedDay] = useState(0);
 
   const canEdit = user ? hasRole(user.role, UserRole.CHEF) : false;
   const canDelete = user ? hasRole(user.role, UserRole.MANAGER) : false;
@@ -248,6 +250,114 @@ export default function SchedulePage() {
     );
   }
 
+  // ── Render helpers ──
+
+  function renderFeatureCard(si: ScheduleItem, expanded = false) {
+    return (
+      <div
+        key={si.id}
+        draggable={canEdit}
+        onDragStart={() => onDragStart(si.id)}
+        className={`rounded border px-2 py-1 ${expanded ? 'px-3 py-2' : ''} text-xs space-y-0.5 ${
+          canEdit ? 'cursor-grab active:cursor-grabbing' : ''
+        }`}
+      >
+        <div className={`font-medium truncate ${expanded ? 'text-sm' : ''}`}>
+          {si.featureItem?.name ?? si.featureItemId.slice(0, 8)}
+        </div>
+        {expanded && si.featureItem?.category && (
+          <div className="text-muted-foreground">{si.featureItem.category.name}</div>
+        )}
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">{si.mealPeriod}</span>
+          {canEdit ? (
+            <button
+              onClick={() => cycleStatus(si)}
+              className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium border ${STATUS_STYLES[si.status] ?? ''}`}
+              title="Click to cycle status"
+            >
+              {si.status}
+            </button>
+          ) : (
+            <span
+              className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${STATUS_STYLES[si.status] ?? ''}`}
+            >
+              {si.status}
+            </span>
+          )}
+        </div>
+        {canEdit && (
+          <div className="flex gap-1 pt-0.5 no-print">
+            <button
+              onClick={() => {
+                setEditingItem(si);
+                setEditNotes(si.notes ?? '');
+              }}
+              className="text-[10px] text-muted-foreground hover:text-foreground"
+            >
+              notes
+            </button>
+            {canDelete && (
+              <button
+                onClick={() => setDeleteTarget(si)}
+                className="text-[10px] text-destructive hover:text-destructive/80"
+              >
+                remove
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function renderDayColumn(day: string, i: number) {
+    const dateStr = dateForDayIndex(monday, i);
+    const displayDate = dateStr.slice(5);
+    const dayItems = byDay[i] ?? [];
+
+    return (
+      <div
+        key={day}
+        className="rounded-lg border p-2 min-h-[180px] flex flex-col"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={() => onDrop(dateStr)}
+      >
+        <div className="text-xs font-semibold text-center mb-2">
+          {day}{' '}
+          <span className="text-muted-foreground font-normal">{displayDate}</span>
+        </div>
+
+        <div className="space-y-1 flex-1">
+          {dayItems.length === 0 && (
+            <p className="text-xs text-muted-foreground text-center mt-4">—</p>
+          )}
+          {dayItems.map((si) => renderFeatureCard(si))}
+        </div>
+
+        {canEdit && (
+          <div className="mt-2 flex gap-1 no-print">
+            <button
+              onClick={() => setAddingForDay(i)}
+              className="flex-1 text-xs text-center py-1 rounded border border-dashed hover:bg-muted text-muted-foreground"
+            >
+              + Add
+            </button>
+            {dayItems.length > 0 && (
+              <button
+                onClick={() => setDuplicatingDay(i)}
+                className="text-xs text-center py-1 px-2 rounded border border-dashed hover:bg-muted text-muted-foreground"
+                title="Duplicate this day"
+              >
+                ⧉
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <>
       <style jsx global>{`
@@ -258,10 +368,10 @@ export default function SchedulePage() {
           .print-page { padding: 16px !important; max-width: none !important; }
         }
       `}</style>
-    <div className="print-page max-w-6xl mx-auto p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="print-page p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold">Weekly Schedule</h1>
-        <div className="no-print flex items-center gap-2 text-sm">
+        <div className="no-print flex flex-wrap items-center gap-2 text-sm">
           {canEdit && (
             <button
               onClick={duplicateWeek}
@@ -287,6 +397,21 @@ export default function SchedulePage() {
           >
             Next →
           </button>
+          <span className="border-l h-5 mx-1" />
+          {(['week', 'stacked', 'day'] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => setViewMode(m)}
+              className={`rounded border px-3 py-1 capitalize ${
+                viewMode === m
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-muted'
+              }`}
+            >
+              {m}
+            </button>
+          ))}
+          <span className="border-l h-5 mx-1" />
           <button
             onClick={() => window.print()}
             className="rounded border px-3 py-1 hover:bg-muted"
@@ -299,98 +424,66 @@ export default function SchedulePage() {
         </span>
       </div>
 
+      {/* Day picker for single-day view */}
+      {viewMode === 'day' && (
+        <div className="no-print flex items-center gap-2 mb-4">
+          <button
+            onClick={() => setSelectedDay((d) => Math.max(0, d - 1))}
+            disabled={selectedDay === 0}
+            className="rounded border px-3 py-1 text-sm hover:bg-muted disabled:opacity-30"
+          >
+            ← Prev Day
+          </button>
+          <div className="flex gap-1">
+            {DAYS.map((day, i) => (
+              <button
+                key={day}
+                onClick={() => setSelectedDay(i)}
+                className={`rounded px-3 py-1 text-sm border ${
+                  selectedDay === i
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-muted'
+                }`}
+              >
+                {day}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setSelectedDay((d) => Math.min(6, d + 1))}
+            disabled={selectedDay === 6}
+            className="rounded border px-3 py-1 text-sm hover:bg-muted disabled:opacity-30"
+          >
+            Next Day →
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <p className="text-muted-foreground">Loading schedule...</p>
-      ) : (
+      ) : viewMode === 'week' ? (
         <div className="grid grid-cols-7 gap-2">
-          {DAYS.map((day, i) => {
-            const dateStr = dateForDayIndex(monday, i);
-            const displayDate = dateStr.slice(5);
-            const dayItems = byDay[i] ?? [];
-
-            return (
-              <div
-                key={day}
-                className="rounded-lg border p-2 min-h-[180px] flex flex-col"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => onDrop(dateStr)}
-              >
-                <div className="text-xs font-semibold text-center mb-2">
-                  {day}{' '}
-                  <span className="text-muted-foreground font-normal">{displayDate}</span>
-                </div>
-
-                <div className="space-y-1 flex-1">
-                  {dayItems.length === 0 && (
-                    <p className="text-xs text-muted-foreground text-center mt-4">—</p>
-                  )}
-                  {dayItems.map((si) => (
-                    <div
-                      key={si.id}
-                      draggable={canEdit}
-                      onDragStart={() => onDragStart(si.id)}
-                      className={`rounded border px-2 py-1 text-xs space-y-0.5 ${
-                        canEdit ? 'cursor-grab active:cursor-grabbing' : ''
-                      }`}
-                    >
-                      <div className="font-medium truncate">
-                        {si.featureItem?.name ?? si.featureItemId.slice(0, 8)}
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">{si.mealPeriod}</span>
-                        {canEdit ? (
-                          <button
-                            onClick={() => cycleStatus(si)}
-                            className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium border ${STATUS_STYLES[si.status] ?? ''}`}
-                            title="Click to cycle status"
-                          >
-                            {si.status}
-                          </button>
-                        ) : (
-                          <span
-                            className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${STATUS_STYLES[si.status] ?? ''}`}
-                          >
-                            {si.status}
-                          </span>
-                        )}
-                      </div>
-                      {canEdit && (
-                        <div className="flex gap-1 pt-0.5 no-print">
-                          <button
-                            onClick={() => {
-                              setEditingItem(si);
-                              setEditNotes(si.notes ?? '');
-                            }}
-                            className="text-[10px] text-muted-foreground hover:text-foreground"
-                          >
-                            notes
-                          </button>
-                          {canDelete && (
-                            <button
-                              onClick={() => setDeleteTarget(si)}
-                              className="text-[10px] text-destructive hover:text-destructive/80"
-                            >
-                              remove
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
+          {DAYS.map((day, i) => renderDayColumn(day, i))}
+        </div>
+      ) : viewMode === 'stacked' ? (
+        <div className="space-y-3">
+          {DAYS.map((day, i) => (
+            <div key={day} className="rounded-lg border p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="font-semibold">{day}</span>
+                <span className="text-sm text-muted-foreground">{dateForDayIndex(monday, i).slice(5)}</span>
                 {canEdit && (
-                  <div className="mt-2 flex gap-1 no-print">
+                  <div className="ml-auto flex gap-1 no-print">
                     <button
                       onClick={() => setAddingForDay(i)}
-                      className="flex-1 text-xs text-center py-1 rounded border border-dashed hover:bg-muted text-muted-foreground"
+                      className="text-xs py-1 px-2 rounded border border-dashed hover:bg-muted text-muted-foreground"
                     >
                       + Add
                     </button>
                     {(byDay[i] ?? []).length > 0 && (
                       <button
                         onClick={() => setDuplicatingDay(i)}
-                        className="text-xs text-center py-1 px-2 rounded border border-dashed hover:bg-muted text-muted-foreground"
+                        className="text-xs py-1 px-2 rounded border border-dashed hover:bg-muted text-muted-foreground"
                         title="Duplicate this day"
                       >
                         ⧉
@@ -399,9 +492,56 @@ export default function SchedulePage() {
                   </div>
                 )}
               </div>
-            );
-          })}
+              {(byDay[i] ?? []).length === 0 ? (
+                <p className="text-sm text-muted-foreground">No features scheduled</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                  {(byDay[i] ?? []).map((si) => renderFeatureCard(si))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
+      ) : (
+        /* Single day view */
+        (() => {
+          const dayItems = byDay[selectedDay] ?? [];
+          const dateStr = dateForDayIndex(monday, selectedDay);
+          return (
+            <div className="rounded-lg border p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-xl font-semibold">{DAYS[selectedDay]}</h2>
+                <span className="text-muted-foreground">{dateStr}</span>
+                {canEdit && (
+                  <div className="ml-auto flex gap-2 no-print">
+                    <button
+                      onClick={() => setAddingForDay(selectedDay)}
+                      className="text-sm py-1 px-3 rounded border border-dashed hover:bg-muted text-muted-foreground"
+                    >
+                      + Add Feature
+                    </button>
+                    {dayItems.length > 0 && (
+                      <button
+                        onClick={() => setDuplicatingDay(selectedDay)}
+                        className="text-sm py-1 px-3 rounded border border-dashed hover:bg-muted text-muted-foreground"
+                        title="Duplicate this day"
+                      >
+                        ⧉ Duplicate
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+              {dayItems.length === 0 ? (
+                <p className="text-muted-foreground">No features scheduled for this day.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {dayItems.map((si) => renderFeatureCard(si, true))}
+                </div>
+              )}
+            </div>
+          );
+        })()
       )}
 
       {/* Edit notes modal */}
