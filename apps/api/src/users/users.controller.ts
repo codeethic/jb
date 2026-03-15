@@ -12,21 +12,21 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.MANAGER)
   async findAll(@CurrentUser() user: { restaurantId: string }) {
     const users = await this.usersService.findAllByRestaurant(user.restaurantId);
     return users.map(({ passwordHash, ...u }) => u);
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.MANAGER)
   async findOne(@Param('id') id: string) {
     const { passwordHash, ...user } = await this.usersService.findById(id);
     return user;
   }
 
   @Post()
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.MANAGER)
   async create(
     @Body() dto: CreateUserDto,
     @CurrentUser() user: { restaurantId: string },
@@ -36,7 +36,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.MANAGER)
   async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     const { passwordHash, ...updated } = await this.usersService.update(id, dto);
     return updated;

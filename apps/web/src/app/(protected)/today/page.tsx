@@ -45,7 +45,12 @@ export default function TodayPage() {
   return (
     <main className="max-w-lg mx-auto p-4 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Today&apos;s Features</h1>
+        <div>
+          <h1 className="text-2xl font-bold">Today&apos;s Features</h1>
+          <p className="text-sm text-muted-foreground">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+          </p>
+        </div>
         <a
           href="/today/print"
           className="text-sm px-3 py-1.5 rounded-md border hover:bg-muted transition-colors"
