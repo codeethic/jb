@@ -70,6 +70,7 @@ export default function SchedulePage() {
   const [deleteTarget, setDeleteTarget] = useState<ScheduleItem | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [duplicating, setDuplicating] = useState(false);
+  const [duplicatingDay, setDuplicatingDay] = useState<number | null>(null);
 
   const canEdit = user ? hasRole(user.role, UserRole.CHEF) : false;
   const canDelete = user ? hasRole(user.role, UserRole.MANAGER) : false;
@@ -204,6 +205,30 @@ export default function SchedulePage() {
     fetchSchedule();
   };
 
+  // Duplicate a single day to a target day
+  const duplicateDay = async (sourceDayIdx: number, targetDayIdx: number) => {
+    const sourceItems = byDay[sourceDayIdx] ?? [];
+    if (sourceItems.length === 0) return;
+    const targetDate = dateForDayIndex(monday, targetDayIdx);
+    const promises = sourceItems.map((item) => {
+      const dto: CreateScheduledFeatureDto = {
+        featureItemId: item.featureItemId,
+        serviceDate: targetDate,
+        mealPeriod: item.mealPeriod,
+        status: FeatureStatus.DRAFT,
+        notes: item.notes,
+        sortOrder: item.sortOrder,
+      };
+      return apiFetch('/schedule', {
+        method: 'POST',
+        body: JSON.stringify(dto),
+      });
+    });
+    await Promise.all(promises);
+    setDuplicatingDay(null);
+    fetchSchedule();
+  };
+
   // Add form overlay
   if (addingForDay !== null) {
     const dateStr = dateForDayIndex(monday, addingForDay);
@@ -224,10 +249,19 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
+    <>
+      <style jsx global>{`
+        @media print {
+          body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .no-print { display: none !important; }
+          .print-break { page-break-inside: avoid; }
+          .print-page { padding: 16px !important; max-width: none !important; }
+        }
+      `}</style>
+    <div className="print-page max-w-6xl mx-auto p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Weekly Schedule</h1>
-        <div className="flex items-center gap-2 text-sm">
+        <div className="no-print flex items-center gap-2 text-sm">
           {canEdit && (
             <button
               onClick={duplicateWeek}
@@ -253,7 +287,16 @@ export default function SchedulePage() {
           >
             Next →
           </button>
+          <button
+            onClick={() => window.print()}
+            className="rounded border px-3 py-1 hover:bg-muted"
+          >
+            Print
+          </button>
         </div>
+        <span className="hidden print:block text-sm font-medium">
+          {startDate} – {endDate}
+        </span>
       </div>
 
       {loading ? (
@@ -312,7 +355,7 @@ export default function SchedulePage() {
                         )}
                       </div>
                       {canEdit && (
-                        <div className="flex gap-1 pt-0.5">
+                        <div className="flex gap-1 pt-0.5 no-print">
                           <button
                             onClick={() => {
                               setEditingItem(si);
@@ -337,12 +380,23 @@ export default function SchedulePage() {
                 </div>
 
                 {canEdit && (
-                  <button
-                    onClick={() => setAddingForDay(i)}
-                    className="mt-2 w-full text-xs text-center py-1 rounded border border-dashed hover:bg-muted text-muted-foreground"
-                  >
-                    + Add
-                  </button>
+                  <div className="mt-2 flex gap-1 no-print">
+                    <button
+                      onClick={() => setAddingForDay(i)}
+                      className="flex-1 text-xs text-center py-1 rounded border border-dashed hover:bg-muted text-muted-foreground"
+                    >
+                      + Add
+                    </button>
+                    {(byDay[i] ?? []).length > 0 && (
+                      <button
+                        onClick={() => setDuplicatingDay(i)}
+                        className="text-xs text-center py-1 px-2 rounded border border-dashed hover:bg-muted text-muted-foreground"
+                        title="Duplicate this day"
+                      >
+                        ⧉
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             );
@@ -382,6 +436,39 @@ export default function SchedulePage() {
         </div>
       )}
 
+      {/* Duplicate day modal */}
+      {duplicatingDay !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-background rounded-lg border shadow-lg p-6 max-w-sm w-full mx-4">
+            <h2 className="text-lg font-semibold mb-1">Duplicate Day</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Copy {(byDay[duplicatingDay] ?? []).length} item(s) from{' '}
+              <strong>{DAYS[duplicatingDay]}</strong> to:
+            </p>
+            <div className="grid grid-cols-4 gap-2">
+              {DAYS.map((day, i) => (
+                <button
+                  key={day}
+                  disabled={i === duplicatingDay}
+                  onClick={() => duplicateDay(duplicatingDay, i)}
+                  className="px-3 py-2 text-sm rounded-md border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setDuplicatingDay(null)}
+                className="px-4 py-2 text-sm rounded-md border hover:bg-muted"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Delete confirmation modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -410,5 +497,6 @@ export default function SchedulePage() {
         </div>
       )}
     </div>
+    </>
   );
 }

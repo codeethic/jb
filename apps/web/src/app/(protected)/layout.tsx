@@ -46,7 +46,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b bg-background">
+      <header className="border-b bg-background print:hidden">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 h-14">
           <div className="flex items-center gap-6">
             <Link href="/dashboard" className="flex items-center">

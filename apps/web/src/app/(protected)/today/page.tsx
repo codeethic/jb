@@ -53,7 +53,7 @@ export default function TodayPage() {
         </div>
         <a
           href="/today/print"
-          className="text-sm px-3 py-1.5 rounded-md border hover:bg-muted transition-colors"
+          className="print:hidden text-sm px-3 py-1.5 rounded-md border hover:bg-muted transition-colors"
         >
           Print Lineup
         </a>
