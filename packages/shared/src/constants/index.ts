@@ -1,7 +1,9 @@
 export const DEFAULT_CATEGORIES = [
   'Appetizer',
   'Soup',
-  'Fish',
+  'Salad',
+  'Steak',
+  'Seafood',
   'Entrée',
   'Dessert',
   'Wine',

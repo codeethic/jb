@@ -4,7 +4,9 @@ exports.DEFAULT_CATEGORIES = void 0;
 exports.DEFAULT_CATEGORIES = [
     'Appetizer',
     'Soup',
-    'Fish',
+    'Salad',
+    'Steak',
+    'Seafood',
     'Entrée',
     'Dessert',
     'Wine',

@@ -87,7 +87,7 @@ export default function FeatureForm({
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            placeholder="Grilled Halibut"
+            placeholder="Coffee-Cured Filet Mignon"
           />
         </div>
 
