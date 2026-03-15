@@ -260,8 +260,8 @@ export default function FeaturesPage() {
                       <span
                         className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
                           f.active
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'bg-green-500/15 text-green-500'
+                            : 'bg-muted text-muted-foreground'
                         }`}
                       >
                         {f.active ? 'Active' : 'Inactive'}

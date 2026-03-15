@@ -190,10 +190,10 @@ export default function FeatureForm({
           <div
             className={`flex h-9 items-center rounded-md border px-3 text-sm ${
               margin >= 60
-                ? 'bg-green-50 text-green-700 border-green-200'
+                ? 'bg-green-500/15 text-green-500 border-green-500/25'
                 : margin >= 40
-                  ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                  : 'bg-red-50 text-red-700 border-red-200'
+                  ? 'bg-yellow-500/15 text-yellow-500 border-yellow-500/25'
+                  : 'bg-red-500/15 text-red-500 border-red-500/25'
             }`}
           >
             {priceNum > 0 ? `${margin.toFixed(1)}%` : '—'}

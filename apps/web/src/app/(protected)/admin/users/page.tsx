@@ -285,8 +285,8 @@ export default function AdminUsersPage() {
                     disabled={u.id === currentUser?.id}
                     className={`text-xs font-medium px-2 py-0.5 rounded ${
                       u.active
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        ? 'bg-green-500/15 text-green-500'
+                        : 'bg-red-500/15 text-red-500'
                     } ${u.id === currentUser?.id ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:opacity-80'}`}
                     title={u.id === currentUser?.id ? 'Cannot deactivate yourself' : 'Toggle active status'}
                   >

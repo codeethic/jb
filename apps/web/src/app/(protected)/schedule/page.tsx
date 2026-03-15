@@ -47,9 +47,9 @@ function dateForDayIndex(monday: Date, i: number) {
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const STATUS_STYLES: Record<string, string> = {
-  [FeatureStatus.DRAFT]: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  [FeatureStatus.PUBLISHED]: 'bg-green-100 text-green-800 border-green-200',
-  [FeatureStatus.EIGHTY_SIXED]: 'bg-red-100 text-red-800 border-red-200',
+  [FeatureStatus.DRAFT]: 'bg-yellow-500/15 text-yellow-500 border-yellow-500/25',
+  [FeatureStatus.PUBLISHED]: 'bg-green-500/15 text-green-500 border-green-500/25',
+  [FeatureStatus.EIGHTY_SIXED]: 'bg-red-500/15 text-red-500 border-red-500/25',
 };
 
 const STATUS_CYCLE: FeatureStatus[] = [
