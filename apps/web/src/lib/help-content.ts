@@ -101,7 +101,15 @@ export const HELP_ENTRIES: HelpEntry[] = [
     category: 'Schedule',
     keywords: ['schedule', 'add', 'assign', 'drag', 'drop', 'meal', 'lunch', 'dinner'],
     content:
-      'Click **Add Feature** on any day/meal-period cell, then select a feature item from your library. You can also drag and drop items to rearrange their order or move them between days.',
+      'Click **Add Feature** on any day/meal-period cell, then select a feature item from your library. You can also drag and drop items to move them between days.',
+  },
+  {
+    id: 'reorder-features',
+    title: 'Reordering Features on the Schedule',
+    category: 'Schedule',
+    keywords: ['reorder', 'drag', 'drop', 'sort', 'order', 'rearrange', 'move', 'position'],
+    content:
+      'Drag and drop feature cards within a day to reorder them. The new order is saved automatically and reflected on the daily lineup page. Reordering is available in all views (week grid, stacked, and single-day). You must have Chef or higher role to reorder.',
   },
   {
     id: 'duplicate-week',

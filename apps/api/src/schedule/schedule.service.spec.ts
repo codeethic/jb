@@ -29,6 +29,7 @@ const mockRepo = {
   update: jest.fn(),
   delete: jest.fn(),
   getLastUsedDates: jest.fn(),
+  updateSortOrders: jest.fn(),
 };
 
 describe('ScheduleService', () => {
@@ -146,6 +147,15 @@ describe('ScheduleService', () => {
       const result = await service.getTodayLineup(restaurantId);
       expect(result).toHaveLength(1);
       expect(result[0].status).toBe(FeatureStatus.PUBLISHED);
+    });
+  });
+
+  describe('reorder', () => {
+    it('should call updateSortOrders on repository', async () => {
+      mockRepo.updateSortOrders.mockResolvedValue(undefined);
+      const dto = { items: [{ id: 'a', sortOrder: 0 }, { id: 'b', sortOrder: 1 }] };
+      await service.reorder(dto);
+      expect(mockRepo.updateSortOrders).toHaveBeenCalledWith(dto.items);
     });
   });
 

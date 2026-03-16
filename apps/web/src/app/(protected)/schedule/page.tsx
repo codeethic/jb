@@ -1,6 +1,20 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
 import { apiFetch } from '@/lib/api';
 import { useAuth, hasRole } from '@/lib/auth-context';
 import type {
@@ -11,6 +25,7 @@ import type {
 } from '@featureboard/shared';
 import { FeatureStatus, MealPeriod, UserRole } from '@featureboard/shared';
 import ScheduleForm from '@/components/schedule/schedule-form';
+import SortableFeatureCard from '@/components/schedule/sortable-feature-card';
 
 interface FeatureOption extends FeatureItem {
   category?: FeatureCategory;
@@ -80,8 +95,14 @@ export default function SchedulePage() {
 
   const { startDate, endDate, monday } = getWeekRange(weekOffset);
 
-  // Drag state
+  // Drag state for cross-day moves
   const dragId = useRef<string | null>(null);
+
+  // @dnd-kit sensors for within-day reordering
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor),
+  );
 
   const fetchSchedule = useCallback(() => {
     setLoading(true);
@@ -159,7 +180,7 @@ export default function SchedulePage() {
     fetchSchedule();
   };
 
-  // Drag-and-drop handlers
+  // Drag-and-drop: cross-day move via native drag
   const onDragStart = (id: string) => {
     dragId.current = id;
   };
@@ -175,6 +196,33 @@ export default function SchedulePage() {
       body: JSON.stringify({ serviceDate: targetDate }),
     });
     fetchSchedule();
+  };
+
+  // Drag-and-drop: within-day reorder via @dnd-kit
+  const handleSortEnd = async (dayIdx: number, event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const dayItems = byDay[dayIdx] ?? [];
+    const oldIndex = dayItems.findIndex((i) => i.id === active.id);
+    const newIndex = dayItems.findIndex((i) => i.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(dayItems, oldIndex, newIndex);
+    // Optimistic update
+    const updatedItems = items.map((item) => {
+      const idx = reordered.findIndex((r) => r.id === item.id);
+      return idx !== -1 ? { ...item, sortOrder: idx } : item;
+    });
+    setItems(updatedItems);
+
+    // Persist to backend
+    await apiFetch('/schedule/reorder', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        items: reordered.map((item, idx) => ({ id: item.id, sortOrder: idx })),
+      }),
+    });
   };
 
   // Duplicate previous week
@@ -257,11 +305,7 @@ export default function SchedulePage() {
     return (
       <div
         key={si.id}
-        draggable={canEdit}
-        onDragStart={() => onDragStart(si.id)}
-        className={`rounded border px-2 py-1 ${expanded ? 'px-3 py-2' : ''} text-xs space-y-0.5 ${
-          canEdit ? 'cursor-grab active:cursor-grabbing' : ''
-        }`}
+        className={`rounded border px-2 py-1 ${expanded ? 'px-3 py-2' : ''} text-xs space-y-0.5`}
       >
         <div className={`font-medium truncate ${expanded ? 'text-sm' : ''}`}>
           {si.featureItem?.name ?? si.featureItemId.slice(0, 8)}
@@ -273,6 +317,7 @@ export default function SchedulePage() {
           <span className="text-muted-foreground">{si.mealPeriod}</span>
           {canEdit ? (
             <button
+              onPointerDown={(e) => e.stopPropagation()}
               onClick={() => cycleStatus(si)}
               className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium border ${STATUS_STYLES[si.status] ?? ''}`}
               title="Click to cycle status"
@@ -290,6 +335,7 @@ export default function SchedulePage() {
         {canEdit && (
           <div className="flex gap-1 pt-0.5 no-print">
             <button
+              onPointerDown={(e) => e.stopPropagation()}
               onClick={() => {
                 setEditingItem(si);
                 setEditNotes(si.notes ?? '');
@@ -300,6 +346,7 @@ export default function SchedulePage() {
             </button>
             {canDelete && (
               <button
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => setDeleteTarget(si)}
                 className="text-[10px] text-destructive hover:text-destructive/80"
               >
@@ -338,12 +385,27 @@ export default function SchedulePage() {
           </button>
         </div>
 
-        <div className="space-y-1 flex-1">
-          {dayItems.length === 0 && (
-            <p className="text-xs text-muted-foreground text-center mt-4">—</p>
-          )}
-          {dayItems.map((si) => renderFeatureCard(si))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={(event) => handleSortEnd(i, event)}
+        >
+          <SortableContext
+            items={dayItems.map((si) => si.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-1 flex-1">
+              {dayItems.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center mt-4">—</p>
+              )}
+              {dayItems.map((si) => (
+                <SortableFeatureCard key={si.id} id={si.id} disabled={!canEdit}>
+                  {renderFeatureCard(si)}
+                </SortableFeatureCard>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
 
         {canEdit && (
           <div className="mt-2 flex gap-1 no-print">
@@ -505,9 +567,24 @@ export default function SchedulePage() {
               {(byDay[i] ?? []).length === 0 ? (
                 <p className="text-sm text-muted-foreground">No features scheduled</p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-                  {(byDay[i] ?? []).map((si) => renderFeatureCard(si))}
-                </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={(event) => handleSortEnd(i, event)}
+                >
+                  <SortableContext
+                    items={(byDay[i] ?? []).map((si) => si.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                      {(byDay[i] ?? []).map((si) => (
+                        <SortableFeatureCard key={si.id} id={si.id} disabled={!canEdit}>
+                          {renderFeatureCard(si)}
+                        </SortableFeatureCard>
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               )}
             </div>
           ))}
@@ -545,9 +622,24 @@ export default function SchedulePage() {
               {dayItems.length === 0 ? (
                 <p className="text-muted-foreground">No features scheduled for this day.</p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {dayItems.map((si) => renderFeatureCard(si, true))}
-                </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={(event) => handleSortEnd(selectedDay, event)}
+                >
+                  <SortableContext
+                    items={dayItems.map((si) => si.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {dayItems.map((si) => (
+                        <SortableFeatureCard key={si.id} id={si.id} disabled={!canEdit}>
+                          {renderFeatureCard(si, true)}
+                        </SortableFeatureCard>
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               )}
             </div>
           );
@@ -658,9 +750,24 @@ export default function SchedulePage() {
                 {dayItems.length === 0 ? (
                   <p className="text-muted-foreground text-center py-8">No features scheduled for this day.</p>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {dayItems.map((si) => renderFeatureCard(si, true))}
-                  </div>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={(event) => handleSortEnd(expandedDay, event)}
+                  >
+                    <SortableContext
+                      items={dayItems.map((si) => si.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {dayItems.map((si) => (
+                          <SortableFeatureCard key={si.id} id={si.id} disabled={!canEdit}>
+                            {renderFeatureCard(si, true)}
+                          </SortableFeatureCard>
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 )}
               </div>
               {canEdit && (

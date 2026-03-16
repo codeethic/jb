@@ -62,6 +62,12 @@ export class TypeOrmScheduledFeatureRepository implements IScheduledFeatureRepos
     await this.repo.delete(id);
   }
 
+  async updateSortOrders(items: { id: string; sortOrder: number }[]): Promise<void> {
+    await Promise.all(
+      items.map((item) => this.repo.update(item.id, { sortOrder: item.sortOrder })),
+    );
+  }
+
   async getLastUsedDates(
     restaurantId: string,
   ): Promise<{ featureItemId: string; lastServiceDate: string }[]> {

@@ -23,6 +23,7 @@ export interface IScheduledFeatureRepository {
   getLastUsedDates(
     restaurantId: string,
   ): Promise<{ featureItemId: string; lastServiceDate: string }[]>;
+  updateSortOrders(items: { id: string; sortOrder: number }[]): Promise<void>;
 }
 
 export const SCHEDULED_FEATURE_REPOSITORY = Symbol('SCHEDULED_FEATURE_REPOSITORY');

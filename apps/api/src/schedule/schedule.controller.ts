@@ -1,7 +1,11 @@
 import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserRole } from '@featureboard/shared';
-import type { CreateScheduledFeatureDto, UpdateScheduledFeatureDto } from '@featureboard/shared';
+import type {
+  CreateScheduledFeatureDto,
+  UpdateScheduledFeatureDto,
+  ReorderScheduledFeaturesDto,
+} from '@featureboard/shared';
 import { Roles, CurrentUser } from '../common/decorators';
 import { RolesGuard } from '../common/guards';
 import { ScheduleService } from './schedule.service';
@@ -40,6 +44,12 @@ export class ScheduleController {
     @CurrentUser() user: { restaurantId: string },
   ) {
     return this.scheduleService.create(dto, user.restaurantId);
+  }
+
+  @Patch('reorder')
+  @Roles(UserRole.CHEF)
+  async reorder(@Body() dto: ReorderScheduledFeaturesDto) {
+    await this.scheduleService.reorder(dto);
   }
 
   @Patch(':id')

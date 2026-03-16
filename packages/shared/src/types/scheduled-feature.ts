@@ -23,3 +23,7 @@ export interface CreateScheduledFeatureDto {
 }
 
 export interface UpdateScheduledFeatureDto extends Partial<CreateScheduledFeatureDto> {}
+
+export interface ReorderScheduledFeaturesDto {
+  items: { id: string; sortOrder: number }[];
+}

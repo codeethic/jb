@@ -21,6 +21,7 @@ const mockService = {
   update: jest.fn().mockResolvedValue(mockScheduled),
   delete: jest.fn().mockResolvedValue(undefined),
   getLastUsedDates: jest.fn().mockResolvedValue([]),
+  reorder: jest.fn().mockResolvedValue(undefined),
 };
 
 describe('ScheduleController', () => {
@@ -75,5 +76,11 @@ describe('ScheduleController', () => {
   it('remove should delete scheduled feature', async () => {
     await controller.remove('sched-1');
     expect(mockService.delete).toHaveBeenCalledWith('sched-1');
+  });
+
+  it('reorder should call service with dto', async () => {
+    const dto = { items: [{ id: 'sched-1', sortOrder: 1 }, { id: 'sched-2', sortOrder: 0 }] };
+    await controller.reorder(dto);
+    expect(mockService.reorder).toHaveBeenCalledWith(dto);
   });
 });

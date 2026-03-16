@@ -1,6 +1,10 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { FeatureStatus } from '@featureboard/shared';
-import type { CreateScheduledFeatureDto, UpdateScheduledFeatureDto } from '@featureboard/shared';
+import type {
+  CreateScheduledFeatureDto,
+  UpdateScheduledFeatureDto,
+  ReorderScheduledFeaturesDto,
+} from '@featureboard/shared';
 import type { IScheduledFeatureRepository } from './scheduled-feature.repository';
 import { SCHEDULED_FEATURE_REPOSITORY } from './scheduled-feature.repository';
 
@@ -42,6 +46,10 @@ export class ScheduleService {
   async delete(id: string) {
     await this.findById(id);
     await this.scheduledFeatureRepository.delete(id);
+  }
+
+  async reorder(dto: ReorderScheduledFeaturesDto) {
+    await this.scheduledFeatureRepository.updateSortOrders(dto.items);
   }
 
   async getLastUsedDates(restaurantId: string) {
